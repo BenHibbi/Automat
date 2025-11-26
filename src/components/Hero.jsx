@@ -166,69 +166,7 @@ const Hero = ({ onChatUpdate, theme, setTheme }) => {
                 </div>
             </div>
 
-            {/* Audit Form */}
-            <div className="z-10 mt-12 flex flex-col items-center gap-6 w-full max-w-5xl">
-                <div className={`px-4 py-2 text-xs uppercase tracking-[0.2em] font-bold ${theme === 'light' ? 'bg-black text-white' : 'bg-white text-black'}`}>
-                    Audit gratuit
-                </div>
-                <form
-                    className="flex flex-col md:flex-row gap-3 w-full items-center justify-center"
-                    onSubmit={async (e) => {
-                        e.preventDefault();
-                        const formData = new FormData(e.target);
-                        const url = formData.get('url');
-                        const email = formData.get('email');
 
-                        // Show loading state (optional, but good for UX)
-                        const btn = e.target.querySelector('button[type="submit"]');
-                        const originalText = btn.innerText;
-                        btn.innerText = "Envoi...";
-                        btn.disabled = true;
-
-                        try {
-                            // Import dynamically to avoid issues
-                            const { sendAuditEmail } = await import('../utils/emailService');
-                            const result = await sendAuditEmail(url, email);
-
-                            if (result.success && result.method === 'emailjs') {
-                                alert('✅ Demande d\'audit envoyée avec succès !');
-                                e.target.reset();
-                            }
-                        } catch (error) {
-                            console.error("Erreur envoi audit:", error);
-                            // Fallback is handled inside sendAuditEmail, but if import fails:
-                            window.location.href = `mailto:benjamin.lacaze@gmail.com?subject=Demande d'audit gratuit&body=Site: ${url} / Email: ${email}`;
-                        } finally {
-                            btn.innerText = originalText;
-                            btn.disabled = false;
-                        }
-                    }}
-                >
-                    <span className="text-xs opacity-50 font-mono uppercase tracking-wider whitespace-nowrap mr-2 hidden md:inline-block">
-                        L'adresse de votre site ici -&gt;
-                    </span>
-                    <input
-                        name="url"
-                        type="text"
-                        placeholder="www.xxx.com"
-                        required
-                        className={`w-full md:w-64 border px-4 py-3 text-xs md:text-sm focus:outline-none transition-colors ${theme === 'light' ? 'bg-white border-black/20 text-black placeholder:text-black/30 focus:border-black' : 'bg-black border-white/30 text-white placeholder:text-white/30 focus:border-white'}`}
-                    />
-                    <input
-                        name="email"
-                        type="email"
-                        placeholder="votremail@mail.com"
-                        required
-                        className={`w-full md:w-64 border px-4 py-3 text-xs md:text-sm focus:outline-none transition-colors ${theme === 'light' ? 'bg-white border-black/20 text-black placeholder:text-black/30 focus:border-black' : 'bg-black border-white/30 text-white placeholder:text-white/30 focus:border-white'}`}
-                    />
-                    <button
-                        type="submit"
-                        className={`w-full md:w-auto px-8 py-3 text-xs uppercase tracking-widest font-medium transition-colors whitespace-nowrap ${theme === 'light' ? 'bg-black text-white hover:bg-black/80' : 'bg-white text-black hover:bg-white/90'}`}
-                    >
-                        Envoyer
-                    </button>
-                </form>
-            </div>
 
             {/* Theme Switcher */}
             <div className="z-10 mt-12 flex gap-6">
