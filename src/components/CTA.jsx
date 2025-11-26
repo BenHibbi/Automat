@@ -13,53 +13,24 @@ const CTA = ({ chatHistory, kapEligibility, pricingData, theme }) => {
     const btnText = isLight ? 'text-black hover:text-white' : 'text-white hover:text-black';
     const btnBg = isLight ? 'bg-black' : 'bg-white';
 
-    const handleSend = (e) => {
+    const handleSend = async (e) => {
         e.preventDefault();
 
-        const subject = "Demande de devis AUTOMAT";
+        // Import emailService dynamically
+        const { sendSignalEmail } = await import('../utils/emailService');
 
-        let body = `Email de contact : ${email}\n\n`;
+        // Add email to pricing data
+        const enrichedPricingData = {
+            ...pricingData,
+            contactEmail: email
+        };
 
-        // Chat History
-        body += `--- HISTORIQUE CHAT ---\n`;
-        if (chatHistory && chatHistory.length > 0) {
-            chatHistory.forEach(msg => {
-                body += `[${msg.role}]: ${msg.text}\n`;
-            });
-        } else {
-            body += "Aucun historique de chat.\n";
+        const result = await sendSignalEmail(chatHistory, kapEligibility, enrichedPricingData);
+
+        if (result.success && result.method === 'emailjs') {
+            alert('✅ Signal envoyé avec succès ! Nous vous recontacterons rapidement.');
+            setEmail('');
         }
-        body += `\n`;
-
-        // Kap Numerik Eligibility
-        body += `--- ÉLIGIBILITÉ KAP NUMÉRIK ---\n`;
-        body += `Statut : ${kapEligibility || 'Non testé'}\n\n`;
-
-        // Pricing Data
-        body += `--- ESTIMATION SYSTÈME ---\n`;
-        if (pricingData) {
-            body += `Mode de financement : ${pricingData.mode}\n`;
-            body += `Total Standard : ${pricingData.total}€\n`;
-
-            if (pricingData.mode === 'kap') {
-                body += `Aide estimée : ${pricingData.details.kapAid}€\n`;
-                body += `Reste à charge : ${pricingData.details.kapRemaining}€\n`;
-            } else if (pricingData.mode === 'waas') {
-                body += `Apport initial : ${pricingData.details.waasUpfront}€\n`;
-                body += `Mensualité : ${pricingData.details.waasMonthly}€ / mois (24 mois)\n`;
-            }
-
-            body += `\nModules sélectionnés :\n`;
-            if (pricingData.selectedItems && pricingData.selectedItems.length > 0) {
-                pricingData.selectedItems.forEach(item => {
-                    body += `- ${item.name} (${item.price}€)\n`;
-                });
-            } else {
-                body += "Aucun module sélectionné.\n";
-            }
-        }
-
-        window.location.href = `mailto:benjamin.lacaze@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     };
 
     return (

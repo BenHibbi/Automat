@@ -173,14 +173,35 @@ const Hero = ({ onChatUpdate, theme, setTheme }) => {
                 </div>
                 <form
                     className="flex flex-col md:flex-row gap-3 w-full items-center justify-center"
-                    onSubmit={(e) => {
+                    onSubmit={async (e) => {
                         e.preventDefault();
                         const formData = new FormData(e.target);
                         const url = formData.get('url');
                         const email = formData.get('email');
-                        const subject = `Demande d'audit gratuit : ${url}`;
-                        const body = `Site à auditer : ${url}\nEmail de contact : ${email}`;
-                        window.location.href = `mailto:benjamin.lacaze@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+                        // Show loading state (optional, but good for UX)
+                        const btn = e.target.querySelector('button[type="submit"]');
+                        const originalText = btn.innerText;
+                        btn.innerText = "Envoi...";
+                        btn.disabled = true;
+
+                        try {
+                            // Import dynamically to avoid issues
+                            const { sendAuditEmail } = await import('../utils/emailService');
+                            const result = await sendAuditEmail(url, email);
+
+                            if (result.success && result.method === 'emailjs') {
+                                alert('✅ Demande d\'audit envoyée avec succès !');
+                                e.target.reset();
+                            }
+                        } catch (error) {
+                            console.error("Erreur envoi audit:", error);
+                            // Fallback is handled inside sendAuditEmail, but if import fails:
+                            window.location.href = `mailto:benjamin.lacaze@gmail.com?subject=Demande d'audit gratuit&body=Site: ${url} / Email: ${email}`;
+                        } finally {
+                            btn.innerText = originalText;
+                            btn.disabled = false;
+                        }
                     }}
                 >
                     <span className="text-xs opacity-50 font-mono uppercase tracking-wider whitespace-nowrap mr-2 hidden md:inline-block">

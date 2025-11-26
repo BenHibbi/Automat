@@ -185,7 +185,8 @@ const KapNumerikPopup = () => {
                     />
                 );
             case 7: // Result
-                return <ResultStep result={eligibilityResult} answers={answers} onClose={closePopup} />;
+                const result = getEligibilityResult();
+                return <ResultStep result={result} answers={answers} onClose={closePopup} />;
 
             default:
                 return null;
