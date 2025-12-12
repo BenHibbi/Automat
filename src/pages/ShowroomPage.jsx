@@ -554,9 +554,13 @@ const ReactRenderer = ({ code, onError }) => {
       }).code;
 
       // Trouve le nom du composant principal (généralement "App" ou le dernier composant défini)
-      const componentMatch = cleanedCode.match(/(?:const|function)\s+(\w+)\s*[=(]/g);
+      // Ne capture que les fonctions (arrow functions avec =>) ou function declarations, pas les tableaux/objets
+      const componentMatch = cleanedCode.match(/(?:const|function)\s+([A-Z]\w*)\s*(?:=\s*\(|=\s*\(\)|=\s*\([^)]*\)\s*=>|\()/g);
       const componentNames = componentMatch
-        ? componentMatch.map(m => m.match(/(?:const|function)\s+(\w+)/)[1])
+        ? componentMatch.map(m => {
+            const match = m.match(/(?:const|function)\s+([A-Z]\w*)/);
+            return match ? match[1] : null;
+          }).filter(Boolean)
         : [];
       const mainComponent = componentNames.includes('App') ? 'App' : componentNames[componentNames.length - 1] || 'App';
 
