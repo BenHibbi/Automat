@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Lock, Copy, Check, Clock, AlertTriangle, Eye, Code, Link2, Trash2, ExternalLink } from 'lucide-react';
 import * as Babel from '@babel/standalone';
 import * as LucideIcons from 'lucide-react';
@@ -560,7 +560,12 @@ const ReactRenderer = ({ code, onError }) => {
         : [];
       const mainComponent = componentNames.includes('App') ? 'App' : componentNames[componentNames.length - 1] || 'App';
 
+      // Debug: log le code transpilé pour identifier les erreurs
+      console.log('Main component detected:', mainComponent);
+      console.log('Transpiled code preview (first 500 chars):', transpiledCode.substring(0, 500));
+
       // Create a function with controlled scope
+      // Utilise une IIFE pour garantir l'ordre d'exécution correct
       const createComponent = new Function(
         'React',
         'useState',
@@ -572,9 +577,14 @@ const ReactRenderer = ({ code, onError }) => {
         'createContext',
         'Icons',
         'motion',
+        'AnimatePresence',
         `
         const { ${Object.keys(LucideIcons).join(', ')} } = Icons;
+
+        // Exécute le code transpilé
         ${transpiledCode}
+
+        // Retourne le composant principal
         return ${mainComponent};
         `
       );
@@ -590,7 +600,8 @@ const ReactRenderer = ({ code, onError }) => {
         React.useContext,
         React.createContext,
         LucideIcons,
-        motion
+        motion,
+        AnimatePresence
       );
 
       if (ComponentResult) {
