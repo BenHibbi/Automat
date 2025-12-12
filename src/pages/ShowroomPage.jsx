@@ -574,6 +574,7 @@ const ShowroomViewer = ({ gistId }) => {
   const [loading, setLoading] = useState(true);
   const [expired, setExpired] = useState(false);
   const [fetchError, setFetchError] = useState(false);
+  const [tailwindReady, setTailwindReady] = useState(false);
 
   // Injecte Tailwind CSS et fonts au chargement (DOIT être avant tout return conditionnel)
   useEffect(() => {
@@ -582,7 +583,14 @@ const ShowroomViewer = ({ gistId }) => {
       const tailwindScript = document.createElement('script');
       tailwindScript.id = 'tailwind-cdn';
       tailwindScript.src = 'https://cdn.tailwindcss.com';
+      tailwindScript.onload = () => {
+        // Attends que Tailwind soit vraiment initialisé
+        setTimeout(() => setTailwindReady(true), 200);
+      };
       document.head.appendChild(tailwindScript);
+    } else {
+      // Tailwind déjà chargé
+      setTailwindReady(true);
     }
 
     // Google Fonts
@@ -617,7 +625,7 @@ const ShowroomViewer = ({ gistId }) => {
     fetchGist();
   }, [gistId]);
 
-  if (loading) {
+  if (loading || !tailwindReady) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <motion.div
