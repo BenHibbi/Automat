@@ -445,67 +445,6 @@ const preprocessCode = (code) => {
   return cleanCode.trim();
 };
 
-// Extrait les données (tableaux/objets de configuration) et les place en premier
-const extractDataDeclarations = (code) => {
-  const dataBlocks = [];
-  let processedCode = code;
-
-  // Trouve les déclarations const au niveau racine qui sont des tableaux
-  // Pattern: const varName = [
-  const regex = /const\s+(\w+)\s*=\s*\[/g;
-  let match;
-  const positions = [];
-
-  while ((match = regex.exec(code)) !== null) {
-    const startIndex = match.index;
-    const beforeMatch = code.substring(0, startIndex);
-
-    // Compte les accolades pour vérifier si on est au niveau racine
-    const openBraces = (beforeMatch.match(/{/g) || []).length;
-    const closeBraces = (beforeMatch.match(/}/g) || []).length;
-
-    // Si c'est au niveau racine (pas dans une fonction)
-    if (openBraces === closeBraces) {
-      // Trouve la fin du tableau en comptant les crochets
-      let bracketCount = 0;
-      let endIndex = startIndex;
-      let inArray = false;
-
-      for (let i = startIndex; i < code.length; i++) {
-        const char = code[i];
-        if (char === '[') {
-          bracketCount++;
-          inArray = true;
-        } else if (char === ']') {
-          bracketCount--;
-          if (inArray && bracketCount === 0) {
-            // Inclut le point-virgule s'il existe
-            endIndex = code[i + 1] === ';' ? i + 2 : i + 1;
-            break;
-          }
-        }
-      }
-
-      if (endIndex > startIndex) {
-        positions.push({ start: startIndex, end: endIndex });
-      }
-    }
-  }
-
-  // Extrait les blocs en ordre inverse pour ne pas décaler les indices
-  positions.reverse().forEach(pos => {
-    const block = code.substring(pos.start, pos.end);
-    dataBlocks.unshift(block);
-    processedCode = processedCode.substring(0, pos.start) + processedCode.substring(pos.end);
-  });
-
-  // Place les déclarations de données en premier
-  if (dataBlocks.length > 0) {
-    return dataBlocks.join('\n\n') + '\n\n' + processedCode;
-  }
-
-  return processedCode;
-};
 
 const ReactRenderer = ({ code, onError }) => {
   const [Component, setComponent] = useState(null);
@@ -516,9 +455,7 @@ const ReactRenderer = ({ code, onError }) => {
 
     try {
       // Nettoie le code des imports/exports
-      let cleanedCode = preprocessCode(code);
-      // Réorganise les déclarations de données pour éviter les erreurs "not defined"
-      cleanedCode = extractDataDeclarations(cleanedCode);
+      const cleanedCode = preprocessCode(code);
 
       // Transpile JSX to JS avec transformation des modules
       const transpiledCode = Babel.transform(cleanedCode, {
