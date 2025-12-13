@@ -11,7 +11,8 @@ import {
   formatExpiryDate,
   getDaysRemaining,
   getLinksIndex,
-  saveLinksIndex
+  saveLinksIndex,
+  cleanCodeWithGroq
 } from '../utils/showroomCodec';
 
 // ============================================
@@ -449,114 +450,133 @@ const preprocessCode = (code) => {
 const ReactRenderer = ({ code, onError }) => {
   const [Component, setComponent] = useState(null);
   const [error, setError] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const groqApiKey = import.meta.env.VITE_GROQ_API_KEY;
 
   useEffect(() => {
     if (!code) return;
 
-    try {
-      // Nettoie le code des imports/exports
-      const cleanedCode = preprocessCode(code);
+    const processCode = async () => {
+      setIsProcessing(true);
 
-      // Transpile JSX to JS avec transformation des modules
-      const transpiledCode = Babel.transform(cleanedCode, {
-        presets: [
-          ['react', { runtime: 'classic' }]
-        ],
-        plugins: [
-          // Supprime les imports/exports restants après transpilation
-          function removeImportsExports() {
-            return {
-              visitor: {
-                ImportDeclaration(path) {
-                  path.remove();
-                },
-                ExportDefaultDeclaration(path) {
-                  // Remplace "export default X" par juste "X"
-                  if (path.node.declaration) {
-                    path.replaceWith(path.node.declaration);
-                  }
-                },
-                ExportNamedDeclaration(path) {
-                  if (path.node.declaration) {
-                    path.replaceWith(path.node.declaration);
-                  } else {
+      try {
+        // Essaie d'abord avec Groq LLM pour un nettoyage intelligent
+        let cleanedCode = await cleanCodeWithGroq(code, groqApiKey);
+
+        // Fallback sur le nettoyage regex si Groq échoue
+        if (!cleanedCode) {
+          console.log('Using regex fallback for code cleaning');
+          cleanedCode = preprocessCode(code);
+        } else {
+          console.log('Code cleaned by Groq LLM');
+        }
+
+        // Transpile JSX to JS avec transformation des modules
+        const transpiledCode = Babel.transform(cleanedCode, {
+          presets: [
+            ['react', { runtime: 'classic' }]
+          ],
+          plugins: [
+            // Supprime les imports/exports restants après transpilation
+            function removeImportsExports() {
+              return {
+                visitor: {
+                  ImportDeclaration(path) {
                     path.remove();
+                  },
+                  ExportDefaultDeclaration(path) {
+                    // Remplace "export default X" par juste "X"
+                    if (path.node.declaration) {
+                      path.replaceWith(path.node.declaration);
+                    }
+                  },
+                  ExportNamedDeclaration(path) {
+                    if (path.node.declaration) {
+                      path.replaceWith(path.node.declaration);
+                    } else {
+                      path.remove();
+                    }
                   }
                 }
-              }
-            };
-          }
-        ],
-        filename: 'showroom.jsx'
-      }).code;
+              };
+            }
+          ],
+          filename: 'showroom.jsx'
+        }).code;
 
-      // Trouve le nom du composant principal (généralement "App" ou le dernier composant défini)
-      // Ne capture que les fonctions (arrow functions avec =>) ou function declarations, pas les tableaux/objets
-      const componentMatch = cleanedCode.match(/(?:const|function)\s+([A-Z]\w*)\s*(?:=\s*\(|=\s*\(\)|=\s*\([^)]*\)\s*=>|\()/g);
-      const componentNames = componentMatch
-        ? componentMatch.map(m => {
-            const match = m.match(/(?:const|function)\s+([A-Z]\w*)/);
-            return match ? match[1] : null;
-          }).filter(Boolean)
-        : [];
-      const mainComponent = componentNames.includes('App') ? 'App' : componentNames[componentNames.length - 1] || 'App';
+        // Trouve le nom du composant principal (généralement "App" ou le dernier composant défini)
+        // Ne capture que les fonctions (arrow functions avec =>) ou function declarations, pas les tableaux/objets
+        const componentMatch = cleanedCode.match(/(?:const|function)\s+([A-Z]\w*)\s*(?:=\s*\(|=\s*\(\)|=\s*\([^)]*\)\s*=>|\()/g);
+        const componentNames = componentMatch
+          ? componentMatch.map(m => {
+              const match = m.match(/(?:const|function)\s+([A-Z]\w*)/);
+              return match ? match[1] : null;
+            }).filter(Boolean)
+          : [];
+        const mainComponent = componentNames.includes('App') ? 'App' : componentNames[componentNames.length - 1] || 'App';
 
-      // Debug: log le code transpilé pour identifier les erreurs
-      console.log('Main component detected:', mainComponent);
-      console.log('Transpiled code preview (first 500 chars):', transpiledCode.substring(0, 500));
+        // Debug: log le code transpilé pour identifier les erreurs
+        console.log('Main component detected:', mainComponent);
+        console.log('Transpiled code preview (first 500 chars):', transpiledCode.substring(0, 500));
 
-      // Create a function with controlled scope
-      // Utilise une IIFE pour garantir l'ordre d'exécution correct
-      const createComponent = new Function(
-        'React',
-        'useState',
-        'useEffect',
-        'useMemo',
-        'useCallback',
-        'useRef',
-        'useContext',
-        'createContext',
-        'Icons',
-        'motion',
-        'AnimatePresence',
-        `
-        const { ${Object.keys(LucideIcons).join(', ')} } = Icons;
+        // Create a function with controlled scope
+        // Utilise une IIFE pour garantir l'ordre d'exécution correct
+        const createComponent = new Function(
+          'React',
+          'useState',
+          'useEffect',
+          'useMemo',
+          'useCallback',
+          'useRef',
+          'useContext',
+          'createContext',
+          'Icons',
+          'motion',
+          'AnimatePresence',
+          `
+          const { ${Object.keys(LucideIcons).join(', ')} } = Icons;
 
-        // Exécute le code transpilé
-        ${transpiledCode}
+          // Exécute le code transpilé
+          ${transpiledCode}
 
-        // Retourne le composant principal
-        return ${mainComponent};
-        `
-      );
+          // Retourne le composant principal
+          return ${mainComponent};
+          `
+        );
 
-      // Execute with React, Lucide icons and framer-motion
-      const ComponentResult = createComponent(
-        React,
-        React.useState,
-        React.useEffect,
-        React.useMemo,
-        React.useCallback,
-        React.useRef,
-        React.useContext,
-        React.createContext,
-        LucideIcons,
-        motion,
-        AnimatePresence
-      );
+        // Execute with React, Lucide icons and framer-motion
+        const ComponentResult = createComponent(
+          React,
+          React.useState,
+          React.useEffect,
+          React.useMemo,
+          React.useCallback,
+          React.useRef,
+          React.useContext,
+          React.createContext,
+          LucideIcons,
+          motion,
+          AnimatePresence
+        );
 
-      if (ComponentResult) {
-        setComponent(() => ComponentResult);
-        setError(null);
-        onError?.(null);
+        if (ComponentResult) {
+          setComponent(() => ComponentResult);
+          setError(null);
+          onError?.(null);
+        }
+      } catch (err) {
+        console.error('Transpilation error:', err);
+        setError(err.message);
+        onError?.(err.message);
+        setComponent(null);
+      } finally {
+        setIsProcessing(false);
       }
-    } catch (err) {
-      console.error('Transpilation error:', err);
-      setError(err.message);
-      onError?.(err.message);
-      setComponent(null);
-    }
-  }, [code, onError]);
+    };
+
+    processCode();
+  }, [code, onError, groqApiKey]);
 
   if (error) {
     return (
@@ -567,10 +587,10 @@ const ReactRenderer = ({ code, onError }) => {
     );
   }
 
-  if (!Component) {
+  if (isProcessing || !Component) {
     return (
       <div className="p-8 text-gray-400 text-center">
-        <p>Chargement...</p>
+        <p>{isProcessing ? 'Optimisation du code avec IA...' : 'Chargement...'}</p>
       </div>
     );
   }

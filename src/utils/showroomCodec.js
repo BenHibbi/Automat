@@ -3,6 +3,77 @@ import pako from 'pako';
 // ID du Gist qui sert d'index pour tous les liens
 const INDEX_GIST_ID = 'showroom_index';
 
+// ============================================
+// GROQ LLM CODE CLEANING
+// ============================================
+
+const CODE_CLEANING_PROMPT = `Tu es un expert React. Transforme ce code pour qu'il puisse s'exécuter dans une sandbox isolée.
+
+RÈGLES STRICTES:
+1. Supprime TOUS les imports (React, useState, useEffect, lucide-react, framer-motion sont déjà disponibles globalement)
+2. Supprime TOUS les exports (export default, export const, etc.)
+3. NE MODIFIE PAS la logique du code, les noms de variables, ou la structure
+4. Retourne UNIQUEMENT le code transformé, sans explications, sans markdown, sans \`\`\`
+5. Le composant principal doit rester une fonction nommée en PascalCase
+
+IMPORTANT: Ne retourne que le code JavaScript/JSX pur, rien d'autre.`;
+
+/**
+ * Nettoie le code React avec GPT-OSS-20B via Groq
+ * Supprime les imports/exports de manière intelligente
+ */
+export const cleanCodeWithGroq = async (code, apiKey) => {
+  if (!apiKey) {
+    console.warn('Groq API key not configured, falling back to regex cleaning');
+    return null;
+  }
+
+  try {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'openai/gpt-oss-20b',
+        messages: [
+          { role: 'system', content: CODE_CLEANING_PROMPT },
+          { role: 'user', content: code }
+        ],
+        temperature: 0.1,
+        max_tokens: 16384
+      })
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      console.error('Groq API error:', response.status, error);
+      return null;
+    }
+
+    const data = await response.json();
+    let cleanedCode = data.choices?.[0]?.message?.content;
+
+    if (!cleanedCode) {
+      console.error('No content in Groq response');
+      return null;
+    }
+
+    // Nettoie les éventuels marqueurs markdown résiduels
+    cleanedCode = cleanedCode
+      .replace(/^```(?:jsx?|javascript)?\n?/gm, '')
+      .replace(/\n?```$/gm, '')
+      .trim();
+
+    console.log('Code cleaned by Groq successfully');
+    return cleanedCode;
+  } catch (error) {
+    console.error('Groq cleaning failed:', error);
+    return null;
+  }
+};
+
 /**
  * Récupère l'index des liens depuis le Gist dédié
  */
