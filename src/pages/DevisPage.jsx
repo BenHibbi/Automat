@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Printer, Edit3, Smartphone, Globe, Shield, Zap, Layout, Lock } from 'lucide-react';
+import { Printer, Edit3, Lock, FileText, Layers, Monitor, Palette, Type, Image, Settings } from 'lucide-react';
 
 // --- PASSWORD SCREEN ---
 const PasswordScreen = ({ onSuccess }) => {
@@ -107,7 +107,7 @@ const EditableField = ({ value, placeholder, className, multiline = false }) => 
   return (
     <input
       type="text"
-      className={`bg-transparent outline-none border-b border-dashed border-gray-300 focus:border-black transition-colors placeholder-gray-400 w-full ${className}`}
+      className={`bg-transparent outline-none border-b border-dashed border-gray-300 focus:border-black transition-colors placeholder-gray-400 ${className}`}
       value={content}
       onChange={handleChange}
       placeholder={placeholder}
@@ -115,37 +115,26 @@ const EditableField = ({ value, placeholder, className, multiline = false }) => 
   );
 };
 
-// --- SERVICE SECTION ---
-const ServiceSection = ({ number, title, items, icon: Icon }) => (
-  <div className="border-t border-black py-2 grid grid-cols-1 md:grid-cols-12 gap-2 print:py-1.5 print:gap-1 break-inside-avoid">
-    <div className="md:col-span-1 print:col-span-1">
-      <span className="font-mono text-[9px] text-gray-500">0{number}</span>
-    </div>
-    <div className="md:col-span-3 print:col-span-3">
-      <div className="flex items-center gap-1">
-        {Icon && <Icon size={12} className="text-black" />}
-        <h3 className="font-bold uppercase tracking-tight text-[10px]">{title}</h3>
-      </div>
-    </div>
-    <div className="md:col-span-8 print:col-span-8">
-      <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-0.5">
-        {items.map((item, idx) => (
-          <li key={idx} className="flex items-start gap-1 text-[10px] text-gray-700">
-            <span className="mt-1 w-1 h-1 bg-black rounded-full flex-shrink-0"></span>
-            <span>{item}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
-  </div>
-);
+// --- EDITABLE PRICE FIELD ---
+const EditablePriceField = ({ value, className }) => {
+  const [content, setContent] = useState(value);
+
+  return (
+    <input
+      type="text"
+      className={`bg-transparent outline-none border-b border-dashed border-gray-300 focus:border-black transition-colors text-right font-bold ${className}`}
+      value={content}
+      onChange={(e) => setContent(e.target.value)}
+    />
+  );
+};
 
 // --- DEVIS NUMBER GENERATOR ---
 const getCurrentDevisNumber = () => {
   const year = new Date().getFullYear();
   const storageKey = `devis_counter_${year}`;
   let counter = parseInt(localStorage.getItem(storageKey) || '0', 10);
-  if (counter === 0) counter = 1; // Premier devis de l'année
+  if (counter === 0) counter = 1;
   return `DEV-${year}-${String(counter).padStart(3, '0')}`;
 };
 
@@ -157,16 +146,41 @@ const incrementDevisNumber = () => {
   return `DEV-${year}-${String(counter).padStart(3, '0')}`;
 };
 
+// --- ACTION SECTION ---
+const ActionSection = ({ number, title, price, plafond, items, icon: Icon }) => (
+  <div className="mb-4 print:mb-3">
+    <div className="flex items-center justify-between border-b-2 border-black pb-1 mb-2">
+      <div className="flex items-center gap-2">
+        {Icon && <Icon size={16} className="text-black" />}
+        <h3 className="font-bold uppercase tracking-tight text-sm">
+          ACTION {number} — {title}
+        </h3>
+      </div>
+      <div className="text-right text-xs font-mono">
+        <span className="text-gray-500">Prix:</span>
+        <EditablePriceField value={price} className="w-20 ml-1 text-sm" />
+        <span className="text-gray-400 ml-2">| Plafond: {plafond}</span>
+      </div>
+    </div>
+    <ul className="space-y-1 pl-1">
+      {items.map((item, idx) => (
+        <li key={idx} className="flex items-start gap-2 text-[11px] text-gray-700">
+          <span className="mt-1.5 w-1 h-1 bg-black rounded-full flex-shrink-0"></span>
+          <span>{item}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+);
+
 // --- DEVIS GENERATOR ---
 const DevisGenerator = () => {
   const [invoiceDate, setInvoiceDate] = useState(new Date().toLocaleDateString('fr-FR'));
   const [devisNumber, setDevisNumber] = useState(() => {
-    // Affiche le numéro actuel sans incrémenter
     const year = new Date().getFullYear();
     const storageKey = `devis_counter_${year}`;
     let counter = parseInt(localStorage.getItem(storageKey) || '0', 10);
     if (counter === 0) {
-      // Premier devis, on initialise à 1
       localStorage.setItem(storageKey, '1');
       counter = 1;
     }
@@ -179,11 +193,9 @@ const DevisGenerator = () => {
   };
 
   const handleNewDevis = () => {
-    // Incrémente et génère un nouveau numéro
     const newNumber = incrementDevisNumber();
     setDevisNumber(newNumber);
     setInvoiceDate(new Date().toLocaleDateString('fr-FR'));
-    // Recharge la page pour réinitialiser tous les champs
     window.location.reload();
   };
 
@@ -210,40 +222,57 @@ const DevisGenerator = () => {
             <Edit3 size={12} /> MODE ÉDITEUR
           </p>
           <p className="text-gray-500 mb-2">
-            Cliquez directement sur les textes soulignés en pointillés pour modifier les infos client.
+            Cliquez directement sur les textes soulignés en pointillés pour modifier les infos.
           </p>
         </div>
       </div>
 
-      {/* DOCUMENT PAGE (A4 Ratio) */}
+      {/* DOCUMENT PAGE 1 (A4) */}
       <div
         ref={componentRef}
-        className="mx-auto max-w-[21cm] bg-white p-[0.8cm] shadow-2xl print:shadow-none print:max-w-none print:w-[210mm] print:h-[297mm] print:m-0 print:p-[5mm] print:overflow-hidden flex flex-col"
+        className="mx-auto max-w-[21cm] bg-white p-[1cm] shadow-2xl print:shadow-none print:max-w-none print:w-[210mm] print:min-h-[297mm] print:m-0 print:p-[10mm] mb-8 print:mb-0"
       >
 
         {/* HEADER */}
-        <header className="mb-4">
-          <div className="flex justify-between items-start border-b-2 border-black pb-2 mb-3">
+        <header className="mb-6">
+          <div className="flex justify-between items-start border-b-2 border-black pb-3 mb-4">
             <div>
               <h1 className="text-4xl font-black tracking-tighter uppercase">Devis.</h1>
+              <p className="text-xs text-gray-500 font-mono mt-1">Kap Numérik — Transformation digitale</p>
+            </div>
+            <div className="text-right">
+              <div className="flex items-center gap-2 justify-end text-xs font-mono">
+                <FileText size={14} className="text-gray-400" />
+                <span className="text-gray-400">N°</span>
+                <span className="font-bold">{devisNumber}</span>
+              </div>
+              <div className="flex items-center gap-2 justify-end text-xs font-mono mt-1">
+                <span className="text-gray-400">Date:</span>
+                <input
+                  value={invoiceDate}
+                  onChange={(e) => setInvoiceDate(e.target.value)}
+                  className="bg-transparent w-24 outline-none text-right"
+                />
+              </div>
+              <p className="text-[10px] text-gray-400 mt-1">Validité: 30 jours</p>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-8">
             {/* PRESTATAIRE */}
             <div>
-              <p className="text-[10px] font-mono text-gray-400 uppercase tracking-widest mb-1">Émetteur</p>
+              <p className="text-[10px] font-mono text-gray-400 uppercase tracking-widest mb-1">Prestataire</p>
               <h2 className="font-bold text-sm uppercase">Benjamin Lacaze</h2>
               <div className="text-xs text-gray-600 mt-1 leading-relaxed">
                 <p>Creative Designer & Developer</p>
                 <p>SIRET : En cours d'immatriculation</p>
-                <EditableField value="benjamin.lacaze@gmail.com" placeholder="Email" className="mt-1 text-xs" />
-                <EditableField value="06 93 61 57 12" placeholder="Téléphone" className="text-xs" />
-                <EditableField value="Saint-Leu, La Réunion" placeholder="Adresse" className="text-xs" />
+                <EditableField value="benjamin.lacaze@gmail.com" placeholder="Email" className="mt-1 text-xs w-full" />
+                <EditableField value="06 93 61 57 12" placeholder="Téléphone" className="text-xs w-full" />
+                <EditableField value="Saint-Leu, La Réunion" placeholder="Adresse" className="text-xs w-full" />
               </div>
             </div>
 
-            {/* CLIENT (Editable) */}
+            {/* CLIENT */}
             <div>
               <p className="text-[10px] font-mono text-gray-400 uppercase tracking-widest mb-1">Client</p>
               <EditableField
@@ -252,143 +281,236 @@ const DevisGenerator = () => {
                 placeholder="Nom du client"
               />
               <div className="text-xs text-gray-600 leading-relaxed">
-                <EditableField value="Adresse complète du client" placeholder="Adresse" className="text-xs" />
-                <EditableField value="Code Postal / Ville" placeholder="Ville" className="text-xs" />
-                <EditableField value="N° SIRET : 000 000 000 00000" placeholder="SIRET Client" className="text-xs" />
-                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[10px] border-t border-gray-100 pt-1">
-                  <div>
-                    <span className="text-gray-400">N°:</span>
-                    <span className="ml-1 font-medium">{devisNumber}</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-400">DATE:</span>
-                    <input
-                      value={invoiceDate}
-                      onChange={(e) => setInvoiceDate(e.target.value)}
-                      className="bg-transparent w-20 ml-1 outline-none"
-                    />
-                  </div>
-                  <div>
-                    <span className="text-gray-400">VALIDITÉ:</span>
-                    <span className="ml-1">30 Jours</span>
-                  </div>
-                </div>
+                <EditableField value="Adresse complète du client" placeholder="Adresse" className="text-xs w-full" />
+                <EditableField value="Code Postal / Ville" placeholder="Ville" className="text-xs w-full" />
+                <EditableField value="N° SIRET : 000 000 000 00000" placeholder="SIRET Client" className="text-xs w-full" />
               </div>
             </div>
           </div>
         </header>
 
-        {/* BODY */}
-        <main>
-          <div className="mb-2">
-            <h2 className="text-lg font-bold uppercase tracking-tight mb-0.5">Refonte Site Vitrine</h2>
-            <p className="text-gray-600 text-[10px]">
-              Création ou refonte complète d'un site internet vitrine. Prestation conforme au dispositif Kap Numérik.
+        {/* OBJET */}
+        <section className="mb-6 bg-gray-50 p-4 border-l-4 border-black">
+          <h2 className="font-bold uppercase text-sm mb-2 flex items-center gap-2">
+            <Layers size={14} />
+            Objet
+          </h2>
+          <p className="text-xs text-gray-700 leading-relaxed">
+            Accompagnement à la transformation numérique dans le cadre du dispositif <strong>Kap Numérik</strong>.
+            Création d'un site internet vitrine professionnel et digitalisation des contenus pour une présence
+            en ligne efficace et pérenne.
+          </p>
+        </section>
+
+        {/* ACTION 1 */}
+        <ActionSection
+          number="1"
+          title="Création site vitrine"
+          price="1 200,00 €"
+          plafond="1 200,00 €"
+          icon={Monitor}
+          items={[
+            "Conception de l'arborescence et de la structure du site (5 à 7 pages)",
+            "Design responsive adapté mobile, tablette et desktop",
+            "Intégration des contenus fournis (textes, images, documents)",
+            "Installation des modules essentiels : formulaire de contact, carte interactive, présentation services",
+            "Optimisation des performances et temps de chargement",
+            "Configuration du nom de domaine et certificat SSL (HTTPS)",
+            "Mise en ligne sur serveur sécurisé",
+            "Formation à la prise en main (1 heure) + guide d'utilisation"
+          ]}
+        />
+
+        {/* ACTION 2 */}
+        <ActionSection
+          number="2"
+          title="Digitalisation des contenus UX/UI"
+          price="2 000,00 €"
+          plafond="2 000,00 €"
+          icon={Palette}
+          items={[
+            "Audit de l'identité visuelle existante et recommandations",
+            "Création ou adaptation de la charte graphique digitale",
+            "Direction artistique UX/UI cohérente avec l'image de marque",
+            "Conception des gabarits de pages (wireframing)",
+            "Hiérarchisation de l'information et parcours utilisateur optimisé",
+            "Traitement et optimisation des visuels pour le web",
+            "Rédaction/adaptation des contenus pour le digital (copywriting SEO)",
+            "Structure Hn et balises meta optimisées pour le référencement naturel",
+            "Indexation Google Search Console"
+          ]}
+        />
+
+        {/* RECAP FINANCIER */}
+        <section className="mt-6 print:mt-4">
+          <h2 className="font-bold uppercase text-sm mb-3 flex items-center gap-2 border-b border-black pb-1">
+            <Settings size={14} />
+            Récapitulatif financier
+          </h2>
+
+          <table className="w-full text-xs border-collapse">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="text-left p-2 font-bold uppercase">Désignation</th>
+                <th className="text-right p-2 font-bold uppercase w-28">Prix HT</th>
+                <th className="text-right p-2 font-bold uppercase w-28">Plafond</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-gray-200">
+                <td className="p-2">ACTION 1 — Création site vitrine</td>
+                <td className="p-2 text-right font-mono">1 200,00 €</td>
+                <td className="p-2 text-right font-mono text-gray-500">1 200,00 €</td>
+              </tr>
+              <tr className="border-b border-gray-200">
+                <td className="p-2">ACTION 2 — Digitalisation des contenus UX/UI</td>
+                <td className="p-2 text-right font-mono">2 000,00 €</td>
+                <td className="p-2 text-right font-mono text-gray-500">2 000,00 €</td>
+              </tr>
+              <tr className="bg-gray-50 font-bold">
+                <td className="p-2">TOTAL HT</td>
+                <td className="p-2 text-right font-mono">3 200,00 €</td>
+                <td className="p-2 text-right font-mono text-gray-500">3 200,00 €</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div className="mt-4 grid grid-cols-2 gap-4">
+            <div className="bg-black text-white p-4">
+              <p className="text-[10px] uppercase tracking-widest opacity-70 mb-1">Subvention Kap Numérik (80%)</p>
+              <p className="text-2xl font-bold">- 2 560,00 €</p>
+            </div>
+            <div className="bg-gray-900 text-white p-4">
+              <p className="text-[10px] uppercase tracking-widest opacity-70 mb-1">Reste à charge client</p>
+              <p className="text-2xl font-bold">640,00 €</p>
+            </div>
+          </div>
+
+          <p className="text-[10px] text-gray-500 mt-2 italic">
+            TVA non applicable, article 293 B du CGI. Montants calculés sur la base d'une subvention de 80%.
+          </p>
+        </section>
+
+      </div>
+
+      {/* DOCUMENT PAGE 2 (A4) - CONDITIONS */}
+      <div className="mx-auto max-w-[21cm] bg-white p-[1cm] shadow-2xl print:shadow-none print:max-w-none print:w-[210mm] print:min-h-[297mm] print:m-0 print:p-[10mm] print:break-before-page">
+
+        {/* CONDITIONS */}
+        <section className="mb-8">
+          <h2 className="font-bold uppercase text-sm mb-4 border-b-2 border-black pb-2">
+            Conditions
+          </h2>
+
+          <div className="space-y-4 text-xs text-gray-700">
+            <div>
+              <h3 className="font-bold text-black mb-1">Délai de réalisation</h3>
+              <p>7 à 15 jours ouvrés à compter de la validation du devis et de la réception des contenus (textes, images, logo).</p>
+            </div>
+
+            <div>
+              <h3 className="font-bold text-black mb-1">Modalités de paiement</h3>
+              <p>Acompte de 30% à la commande. Solde à la livraison, avant mise en ligne définitive.</p>
+              <p className="mt-1">Paiement par virement bancaire ou chèque.</p>
+            </div>
+
+            <div>
+              <h3 className="font-bold text-black mb-1">Livrables</h3>
+              <ul className="list-disc pl-4 space-y-1 mt-1">
+                <li>Site internet fonctionnel accessible en ligne</li>
+                <li>Accès administrateur au site</li>
+                <li>Guide de prise en main PDF</li>
+                <li>Formation de 1 heure (visio ou présentiel)</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-bold text-black mb-1">Prérequis client</h3>
+              <ul className="list-disc pl-4 space-y-1 mt-1">
+                <li>Fourniture des contenus textuels</li>
+                <li>Fourniture du logo en haute définition</li>
+                <li>Fourniture des photos/visuels ou validation pour utilisation de banque d'images</li>
+                <li>Réactivité pour les validations (72h max recommandé)</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-bold text-black mb-1">Garantie et maintenance</h3>
+              <p>Correction des anomalies techniques pendant 30 jours après livraison.</p>
+              <p className="mt-1">Maintenance évolutive disponible sur devis séparé.</p>
+            </div>
+          </div>
+        </section>
+
+        {/* CONFORMITÉ KAP NUMERIK */}
+        <section className="mb-8 bg-gray-50 p-5 border border-gray-200">
+          <h2 className="font-bold uppercase text-sm mb-3 flex items-center gap-2">
+            <Image size={14} />
+            Conformité Kap Numérik
+          </h2>
+          <div className="text-xs text-gray-700 leading-relaxed space-y-2">
+            <p>
+              Ce devis est établi dans le cadre du dispositif <strong>Kap Numérik</strong>, programme d'aide
+              à la transformation numérique des TPE réunionnaises porté par la Région Réunion.
+            </p>
+            <p>
+              Les prestations décrites sont conformes aux critères d'éligibilité du dispositif et respectent
+              les plafonds définis pour chaque action. Le bénéficiaire s'engage à effectuer les démarches
+              administratives nécessaires à l'obtention de la subvention.
+            </p>
+            <p>
+              En cas de non-obtention de la subvention, le client reste redevable de l'intégralité du montant
+              du devis, sauf accord préalable écrit du prestataire.
+            </p>
+            <p className="font-bold">
+              Plafond global Kap Numérik : 4 000,00 € HT — Taux de subvention : 80% — Subvention max : 3 200,00 €
             </p>
           </div>
+        </section>
 
-          <div className="flex flex-col gap-0">
-            <ServiceSection
-              number="1"
-              title="Conception & Structure"
-              icon={Layout}
-              items={[
-                "Définition de l'arborescence (5 à 7 pages)",
-                "Création des gabarits de pages (Wireframing)",
-                "Design responsive (Mobile / Tablette / Desktop)",
-                "Direction artistique UX/UI"
-              ]}
-            />
+        {/* MENTIONS LÉGALES */}
+        <section className="mb-8 text-[9px] text-gray-500 border-t border-gray-200 pt-4">
+          <p className="mb-2">
+            <strong>Propriété intellectuelle :</strong> Le prestataire cède au client les droits d'exploitation
+            des créations réalisées dans le cadre de cette prestation, à compter du paiement intégral.
+            Les fichiers sources restent la propriété du prestataire.
+          </p>
+          <p className="mb-2">
+            <strong>Responsabilité :</strong> Le prestataire ne saurait être tenu responsable des contenus fournis
+            par le client. Le client garantit disposer des droits nécessaires sur les éléments transmis.
+          </p>
+          <p>
+            <strong>Litiges :</strong> En cas de litige, les parties s'engagent à rechercher une solution amiable.
+            À défaut, le tribunal compétent sera celui de Saint-Denis de La Réunion.
+          </p>
+        </section>
 
-            <ServiceSection
-              number="2"
-              title="Développement & Intégration"
-              icon={Smartphone}
-              items={[
-                "Intégration des contenus fournis",
-                "Mise en page professionnelle & Typographie",
-                "Installation modules : Contact, Carte, Services",
-                "Optimisation des performances (Vitesse)"
-              ]}
-            />
-
-            <ServiceSection
-              number="3"
-              title="Optimisation SEO"
-              icon={Globe}
-              items={[
-                "Structure Hn & Balises Meta optimisées",
-                "Configuration technique référencement naturel",
-                "Indexation Google Search Console",
-                "Optimisation sémantique de base"
-              ]}
-            />
-
-            <ServiceSection
-              number="4"
-              title="Hébergement & Déploiement"
-              icon={Shield}
-              items={[
-                "Configuration nom de domaine",
-                "Installation certificat SSL (Sécurité HTTPS)",
-                "Mise en ligne serveur sécurisé",
-                "Tests techniques pré-lancement"
-              ]}
-            />
-
-            <ServiceSection
-              number="5"
-              title="Formation Autonomie"
-              icon={Zap}
-              items={[
-                "Session de prise en main (1 heure)",
-                "Guide de mise à jour autonome",
-                "Bonnes pratiques de gestion"
-              ]}
-            />
-          </div>
-        </main>
-
-        {/* FOOTER & TOTALS */}
-        <footer className="mt-2 break-inside-avoid">
-          {/* ESTIMATION DUREE */}
-          <div className="flex items-center gap-4 text-[9px] font-mono text-gray-500 mb-2 border-b border-gray-200 pb-1">
-            <span className="uppercase tracking-widest">Délai estimé:</span>
-            <span>7 à 15 jours (selon validation contenus)</span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-            <div className="text-[9px] text-gray-500 space-y-0">
-              <p className="font-bold text-black uppercase mb-0.5 text-[10px]">Conditions de règlement</p>
-              <p>Paiement par virement bancaire. Acompte 30% au démarrage.</p>
-              <p>Solde à la livraison. TVA non applicable, art. 293 B du CGI.</p>
+        {/* SIGNATURES */}
+        <section className="mt-auto">
+          <div className="grid grid-cols-2 gap-8">
+            <div className="border-t-2 border-black pt-3">
+              <p className="text-[10px] uppercase font-bold tracking-widest mb-1">Signature du prestataire</p>
+              <p className="text-xs text-gray-500 mb-8">Bon pour accord</p>
+              <p className="text-sm italic">Benjamin Lacaze</p>
+              <p className="text-xs text-gray-500 mt-1">Date : {invoiceDate}</p>
             </div>
-
-            <div className="bg-black text-white p-3">
-              <div className="flex justify-between items-center text-[10px] opacity-80">
-                <span>Total HT</span>
-                <span>3 200,00 €</span>
-              </div>
-              <div className="flex justify-between items-center text-[10px] opacity-80 mb-2">
-                <span>TVA (0%)</span>
-                <span>0,00 €</span>
-              </div>
-              <div className="flex justify-between items-end border-t border-white/20 pt-1">
-                <span className="font-mono text-[10px] uppercase tracking-widest">Net à payer</span>
-                <span className="text-xl font-bold tracking-tight">3 200 €</span>
-              </div>
+            <div className="border-t-2 border-black pt-3">
+              <p className="text-[10px] uppercase font-bold tracking-widest mb-1">Signature du client</p>
+              <p className="text-xs text-gray-500 mb-8">Lu et approuvé, bon pour accord</p>
+              <div className="h-12"></div>
+              <p className="text-xs text-gray-500 mt-1">Date : _______________</p>
             </div>
           </div>
+        </section>
 
-          <div className="mt-4 flex justify-between items-end pb-1">
-            <div className="w-1/3 border-t border-black pt-1">
-              <p className="text-[8px] uppercase font-bold tracking-widest">Signature Prestataire</p>
-              <p className="mt-3 text-[9px] italic">Benjamin Lacaze</p>
-            </div>
-            <div className="w-1/3 border-t border-black pt-1">
-              <p className="text-[8px] uppercase font-bold tracking-widest">Bon pour accord (Date & Signature)</p>
-            </div>
-          </div>
+        {/* FOOTER */}
+        <footer className="mt-8 pt-4 border-t border-gray-200 text-center">
+          <p className="text-[10px] text-gray-400 uppercase tracking-widest">
+            AUTOMAT — Consulting Digital & IA — La Réunion
+          </p>
+          <p className="text-[9px] text-gray-400 mt-1">
+            benjamin.lacaze@gmail.com • 06 93 61 57 12 • Saint-Leu
+          </p>
         </footer>
 
       </div>
