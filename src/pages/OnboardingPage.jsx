@@ -116,7 +116,7 @@ const OnboardingPage = () => {
                             </li>
                             <li className="flex items-start gap-3">
                                 <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                                <span className="text-gray-300">La Région vous rembourse ensuite <strong className="text-white">jusqu'à 80%</strong> des dépenses éligibles HT (max 3 200 € remboursés)</span>
+                                <span className="text-gray-300">La Région vous rembourse ensuite <strong className="text-white">jusqu'à 80%</strong> des dépenses éligibles HT (avec plafond de 3200€)</span>
                             </li>
                         </ul>
                     </div>
