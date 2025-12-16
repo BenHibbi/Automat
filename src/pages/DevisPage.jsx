@@ -230,7 +230,7 @@ const DevisGenerator = () => {
           <div className="flex justify-between items-start border-b-2 border-black pb-3 mb-4">
             <div>
               <h1 className="text-4xl font-black tracking-tighter uppercase">Devis.</h1>
-              <p className="text-xs text-gray-500 font-mono mt-1">Kap Numérik — Transformation digitale</p>
+              <p className="text-xs text-gray-500 font-mono mt-1">Création et digitalisation de présence en ligne</p>
             </div>
             <div className="text-right">
               <div className="flex items-center gap-2 justify-end text-xs font-mono">
@@ -288,9 +288,8 @@ const DevisGenerator = () => {
             Objet
           </h2>
           <p className="text-xs text-gray-700 leading-relaxed">
-            Accompagnement à la transformation numérique dans le cadre du dispositif <strong>Kap Numérik</strong>.
-            Création d'un site internet vitrine professionnel et digitalisation des contenus pour une présence
-            en ligne efficace et pérenne.
+            Création d'un site internet vitrine professionnel et digitalisation des contenus existants afin d'assurer
+            une présence en ligne claire, fonctionnelle et pérenne, conforme au dispositif <strong>Kap Numérik</strong>.
           </p>
         </section>
 
@@ -316,19 +315,19 @@ const DevisGenerator = () => {
         {/* ACTION 2 */}
         <ActionSection
           number="2"
-          title="Digitalisation des contenus UX/UI"
+          title="Digitalisation des contenus et optimisation UX/UI"
           price="2 000,00 €"
           plafond="2 000,00 €"
           icon={Palette}
           items={[
-            "Audit de l'identité visuelle existante et recommandations",
-            "Création ou adaptation de la charte graphique digitale",
-            "Direction artistique UX/UI cohérente avec l'image de marque",
-            "Conception des gabarits de pages (wireframing)",
-            "Hiérarchisation de l'information et parcours utilisateur optimisé",
-            "Traitement et optimisation des visuels pour le web",
-            "Rédaction/adaptation des contenus pour le digital (copywriting SEO)",
-            "Structure Hn et balises meta optimisées pour le référencement naturel",
+            "Analyse des contenus existants du site",
+            "Adaptation graphique des contenus pour le support web",
+            "Mise en cohérence visuelle des pages",
+            "Conception des gabarits de pages",
+            "Organisation et hiérarchisation des informations",
+            "Optimisation des visuels pour le web",
+            "Structuration des contenus (titres, sous-titres, sections)",
+            "Optimisation SEO de base (balises, structure Hn)",
             "Indexation Google Search Console"
           ]}
         />
@@ -355,7 +354,7 @@ const DevisGenerator = () => {
                 <td className="p-2 text-right font-mono text-gray-500">1 200,00 €</td>
               </tr>
               <tr className="border-b border-gray-200">
-                <td className="p-2">ACTION 2 — Digitalisation des contenus UX/UI</td>
+                <td className="p-2">ACTION 2 — Digitalisation des contenus et optimisation UX/UI</td>
                 <td className="p-2 text-right font-mono">2 000,00 €</td>
                 <td className="p-2 text-right font-mono text-gray-500">2 000,00 €</td>
               </tr>
@@ -367,19 +366,8 @@ const DevisGenerator = () => {
             </tbody>
           </table>
 
-          <div className="mt-4 grid grid-cols-2 gap-4">
-            <div className="bg-black text-white p-4">
-              <p className="text-[10px] uppercase tracking-widest opacity-70 mb-1">Subvention Kap Numérik (80%)</p>
-              <p className="text-2xl font-bold">- 2 560,00 €</p>
-            </div>
-            <div className="bg-gray-900 text-white p-4">
-              <p className="text-[10px] uppercase tracking-widest opacity-70 mb-1">Reste à charge client</p>
-              <p className="text-2xl font-bold">640,00 €</p>
-            </div>
-          </div>
-
-          <p className="text-[10px] text-gray-500 mt-2 italic">
-            TVA non applicable, article 293 B du CGI. Montants calculés sur la base d'une subvention de 80%.
+          <p className="text-[10px] text-gray-500 mt-3 italic">
+            TVA non applicable, article 293 B du CGI.
           </p>
         </section>
 
@@ -494,10 +482,7 @@ const DevisGenerator = () => {
 
         {/* FOOTER */}
         <footer className="mt-8 pt-4 border-t border-gray-200 text-center">
-          <p className="text-[10px] text-gray-400 uppercase tracking-widest">
-            AUTOMAT — Consulting Digital & IA — La Réunion
-          </p>
-          <p className="text-[9px] text-gray-400 mt-1">
+          <p className="text-[9px] text-gray-400">
             benjamin.lacaze@gmail.com • 06 93 61 57 12 • Saint-Leu
           </p>
         </footer>
