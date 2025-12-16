@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Printer, Edit3, Lock, FileText, Layers, Monitor, Palette, Type, Image, Settings } from 'lucide-react';
+import { Printer, Edit3, Lock, FileText, Layers, Monitor, Palette, Image, Settings } from 'lucide-react';
 
 // --- PASSWORD SCREEN ---
 const PasswordScreen = ({ onSuccess }) => {
@@ -130,14 +130,6 @@ const EditablePriceField = ({ value, className }) => {
 };
 
 // --- DEVIS NUMBER GENERATOR ---
-const getCurrentDevisNumber = () => {
-  const year = new Date().getFullYear();
-  const storageKey = `devis_counter_${year}`;
-  let counter = parseInt(localStorage.getItem(storageKey) || '0', 10);
-  if (counter === 0) counter = 1;
-  return `DEV-${year}-${String(counter).padStart(3, '0')}`;
-};
-
 const incrementDevisNumber = () => {
   const year = new Date().getFullYear();
   const storageKey = `devis_counter_${year}`;
@@ -461,9 +453,6 @@ const DevisGenerator = () => {
             <p>
               En cas de non-obtention de la subvention, le client reste redevable de l'intégralité du montant
               du devis, sauf accord préalable écrit du prestataire.
-            </p>
-            <p className="font-bold">
-              Plafond global Kap Numérik : 4 000,00 € HT — Taux de subvention : 80% — Subvention max : 3 200,00 €
             </p>
           </div>
         </section>
