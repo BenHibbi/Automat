@@ -257,7 +257,7 @@ const DevisGenerator = () => {
               <h2 className="font-bold text-sm uppercase">Benjamin Lacaze</h2>
               <div className="text-xs text-gray-600 mt-1 leading-relaxed">
                 <p>Creative Designer & Developer</p>
-                <p>SIRET : En cours d'immatriculation</p>
+                <p>SIRET : 515 146 215 00055</p>
                 <EditableField value="benjamin.lacaze@gmail.com" placeholder="Email" className="mt-1 text-xs w-full" />
                 <EditableField value="06 93 61 57 12" placeholder="Téléphone" className="text-xs w-full" />
                 <EditableField value="Saint-Leu, La Réunion" placeholder="Adresse" className="text-xs w-full" />
@@ -301,14 +301,16 @@ const DevisGenerator = () => {
           plafond="1 200,00 €"
           icon={Monitor}
           items={[
-            "Conception de l'arborescence et de la structure du site (5 à 7 pages)",
-            "Design responsive adapté mobile, tablette et desktop",
-            "Intégration des contenus fournis (textes, images, documents)",
-            "Installation des modules essentiels : formulaire de contact, carte interactive, présentation services",
-            "Optimisation des performances et temps de chargement",
-            "Configuration du nom de domaine et certificat SSL (HTTPS)",
-            "Mise en ligne sur serveur sécurisé",
-            "Formation à la prise en main (1 heure) + guide d'utilisation"
+            "Création d'un site internet vitrine professionnel destiné à assurer une présence en ligne claire, moderne et fonctionnelle pour l'entreprise.",
+            "Conception de la structure du site (format one-page ou multi-sections), incluant la définition des sections fonctionnelles (présentation, services, contenus, contact, accès rapide)",
+            "Conception de l'interface graphique et de l'identité visuelle du site, adaptée à l'activité du client",
+            "Développement du site en design responsive (ordinateur, tablette, mobile)",
+            "Intégration des contenus fournis par le client (textes, images, logo)",
+            "Mise en place des fonctionnalités essentielles : formulaire de contact, accès rapide téléphone / email",
+            "Configuration du nom de domaine et du certificat de sécurité SSL (HTTPS)",
+            "Hébergement du site sur serveur sécurisé",
+            "Mise en ligne du site internet",
+            "Formation à la prise en main du site (1 heure) et remise d'un guide d'utilisation"
           ]}
         />
 
@@ -320,15 +322,15 @@ const DevisGenerator = () => {
           plafond="2 000,00 €"
           icon={Palette}
           items={[
-            "Analyse des contenus existants du site",
-            "Adaptation graphique des contenus pour le support web",
-            "Mise en cohérence visuelle des pages",
-            "Conception des gabarits de pages",
-            "Organisation et hiérarchisation des informations",
-            "Optimisation des visuels pour le web",
-            "Structuration des contenus (titres, sous-titres, sections)",
-            "Optimisation SEO de base (balises, structure Hn)",
-            "Indexation Google Search Console"
+            "Travail de structuration, d'adaptation et d'optimisation des contenus afin d'améliorer la compréhension de l'offre, la lisibilité des informations et l'efficacité du site.",
+            "Analyse des contenus existants (textes, documents, visuels)",
+            "Adaptation des contenus au support web (réécriture légère si nécessaire, reformulation, synthèse)",
+            "Organisation et hiérarchisation des informations (titres, sous-titres, sections)",
+            "Structuration des contenus pour une lecture fluide et un accès rapide à l'information",
+            "Optimisation de la présentation des contenus pour faciliter le parcours de consultation",
+            "Optimisation SEO de base : structure des titres (Hn), balises essentielles, optimisation sémantique locale",
+            "Configuration et indexation du site sur Google Search Console",
+            "Vérification de la cohérence globale des contenus avant mise en production finale"
           ]}
         />
 
