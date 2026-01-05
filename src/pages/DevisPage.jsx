@@ -301,7 +301,6 @@ const DevisGenerator = () => {
           plafond="1 200,00 €"
           icon={Monitor}
           items={[
-            "Création d'un site internet vitrine professionnel destiné à assurer une présence en ligne claire, moderne et fonctionnelle pour l'entreprise.",
             "Conception de la structure du site (format one-page ou multi-sections), incluant la définition des sections fonctionnelles (présentation, services, contenus, contact, accès rapide)",
             "Conception de l'interface graphique et de l'identité visuelle du site, adaptée à l'activité du client",
             "Développement du site en design responsive (ordinateur, tablette, mobile)",
