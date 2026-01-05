@@ -316,7 +316,7 @@ const DevisGenerator = () => {
         {/* ACTION 2 */}
         <ActionSection
           number="2"
-          title="Digitalisation des contenus et optimisation UX/UI"
+          title="Organisation des contenus et optimisation de la visibilité en ligne"
           price="2 000,00 €"
           plafond="2 000,00 €"
           icon={Palette}
@@ -355,7 +355,7 @@ const DevisGenerator = () => {
                 <td className="p-2 text-right font-mono text-gray-500">1 200,00 €</td>
               </tr>
               <tr className="border-b border-gray-200">
-                <td className="p-2">ACTION 2 — Digitalisation des contenus et optimisation UX/UI</td>
+                <td className="p-2">ACTION 2 — Organisation des contenus et optimisation de la visibilité en ligne</td>
                 <td className="p-2 text-right font-mono">2 000,00 €</td>
                 <td className="p-2 text-right font-mono text-gray-500">2 000,00 €</td>
               </tr>
