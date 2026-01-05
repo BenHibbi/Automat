@@ -282,14 +282,13 @@ const DevisGenerator = () => {
         </header>
 
         {/* OBJET */}
-        <section className="mb-6 bg-gray-50 p-4 border-l-4 border-black">
-          <h2 className="font-bold uppercase text-sm mb-2 flex items-center gap-2">
+        <section className="mb-4 bg-gray-50 p-3 border-l-4 border-black">
+          <h2 className="font-bold uppercase text-sm mb-1 flex items-center gap-2">
             <Layers size={14} />
             Objet
           </h2>
-          <p className="text-xs text-gray-700 leading-relaxed">
-            Création d'un site internet vitrine professionnel et digitalisation des contenus existants afin d'assurer
-            une présence en ligne claire, fonctionnelle et pérenne, conforme au dispositif <strong>Kap Numérik</strong>.
+          <p className="text-xs text-gray-700">
+            Création d'un site internet vitrine professionnel et structuration des contenus afin d'assurer une présence en ligne claire, fonctionnelle et pérenne, dans le cadre du dispositif <strong>Kap Numérik</strong>.
           </p>
         </section>
 
