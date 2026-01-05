@@ -390,7 +390,7 @@ const DevisGenerator = () => {
 
             <div>
               <h3 className="font-bold text-black mb-1">Modalités de paiement</h3>
-              <p>Acompte de 30% à la commande. Solde à la livraison, avant mise en ligne définitive.</p>
+              <p>Paiement à la livraison.</p>
               <p className="mt-1">Paiement par virement bancaire ou chèque.</p>
             </div>
 
@@ -430,17 +430,10 @@ const DevisGenerator = () => {
           </h2>
           <div className="text-xs text-gray-700 leading-relaxed space-y-2">
             <p>
-              Ce devis est établi dans le cadre du dispositif <strong>Kap Numérik</strong>, programme d'aide
-              à la transformation numérique des TPE réunionnaises porté par la Région Réunion.
+              Ce devis est établi dans le cadre du dispositif <strong>Kap Numérik</strong>, programme d'aide à la transformation numérique des TPE réunionnaises porté par la Région Réunion.
             </p>
             <p>
-              Les prestations décrites sont conformes aux critères d'éligibilité du dispositif et respectent
-              les plafonds définis pour chaque action. Le bénéficiaire s'engage à effectuer les démarches
-              administratives nécessaires à l'obtention de la subvention.
-            </p>
-            <p>
-              En cas de non-obtention de la subvention, le client reste redevable de l'intégralité du montant
-              du devis, sauf accord préalable écrit du prestataire.
+              Les prestations décrites entrent dans les catégories de dépenses éligibles prévues par le dispositif et respectent les plafonds financiers définis pour chaque action.
             </p>
           </div>
         </section>
