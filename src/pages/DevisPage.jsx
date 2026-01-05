@@ -300,7 +300,7 @@ const DevisGenerator = () => {
           plafond="1 200,00 €"
           icon={Monitor}
           items={[
-            "Conception de la structure du site (format one-page ou multi-sections), incluant la définition des sections fonctionnelles (présentation, services, contenus, contact, accès rapide)",
+            "Conception de la structure du site (format one-page ou multi-sections)",
             "Conception de l'interface graphique et de l'identité visuelle du site, adaptée à l'activité du client",
             "Développement du site en design responsive (ordinateur, tablette, mobile)",
             "Intégration des contenus fournis par le client (textes, images, logo)",
